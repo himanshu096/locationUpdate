@@ -3,7 +3,10 @@ package in.androize.himanshu.locationapp;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -34,8 +37,41 @@ public class LocationActivity extends AppCompatActivity {
         AlarmManager alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 30*1000, pintent);
 
+
+
         CircularImageView imageView=(CircularImageView)findViewById(R.id.image_view);
 
+        showSettingsAlert("NETWORK");
+
         Picasso.with(this).load("http://chat.connectinn.tk/128x128/83119d/fff/Vatsal.png&text=VS").into(imageView);
+    }
+
+
+    public void showSettingsAlert(String provider) {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(
+               this);
+
+        alertDialog.setTitle(provider + " SETTINGS");
+
+        alertDialog
+                .setMessage(provider + " is not enabled! Want to go to settings menu?");
+
+        alertDialog.setPositiveButton("Settings",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(
+                                Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                      startActivity(intent);
+                    }
+                });
+
+        alertDialog.setNegativeButton("Cancel",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+        alertDialog.show();
     }
 }

@@ -28,10 +28,12 @@ public class MyService extends Service {
 
 
 
-    private static final String TAG = "BOOMBOOMTESTGPS";
+    private static final String TAG = "codeo";
     private LocationManager mLocationManager = null;
-    private static final int LOCATION_INTERVAL = 1000;
-    private static final float LOCATION_DISTANCE = 10f;
+    private static final int LOCATION_INTERVAL = 1000*60;
+    private static final float LOCATION_DISTANCE = 0;
+
+
 
 
 
@@ -47,6 +49,9 @@ public class MyService extends Service {
         {
             Log.e(TAG, "LocationListener " + provider);
             mLastLocation = new Location(provider);
+
+
+            Log.d("codeo",mLastLocation.getLatitude()+" ,"+mLastLocation );
         }
 
         @Override
@@ -157,34 +162,6 @@ public class MyService extends Service {
     }
 
 
-//    public MyService(String name) {
-//        super(name);
-//    }
-//
-//
-//    @Override
-//    protected void onHandleIntent(@Nullable Intent intent) {
-//
-//        try{
-//            // String urlstring="10.1.1.1:8090/login.xml";
-//            Ion.with(this)
-//                    .load("https://requestb.in/14ss2cn1")
-//                    .setBodyParameter("kuchbi", "pragati")
-//                    .asString()
-//                    .setCallback(new FutureCallback<String>() {
-//                        @Override
-//                        public void onCompleted(Exception e, String result) {
-//                            Log.d("codeo",result);
-//                        }
-//                    });
-//
-//            Toast.makeText(this,"result called",Toast.LENGTH_SHORT).show();
-//
-//        }catch (Exception e)
-//        {            Toast.makeText(this,"result exceptiom",Toast.LENGTH_SHORT).show();
-//            Log.d("codeo","error");
-//
-//        }
 
     private void initializeLocationManager() {
         Log.e(TAG, "initializeLocationManager");
