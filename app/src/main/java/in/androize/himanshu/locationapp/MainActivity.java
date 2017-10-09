@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String pas=password.getText().toString();
 
         try{
-            // String urlstring="10.1.1.1:8090/login.xml";
             Ion.with(this)
                     .load("http://web.demoplatform.simplifii.com/api/v1/admin/authenticate")
                     .setBodyParameter("mobile", phone)
@@ -65,6 +64,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         "myapp", Context.MODE_PRIVATE);
 
                                 prefs.edit().putString("token",token).apply();
+
+                                Intent i=new Intent(MainActivity.this,LocationActivity.class);
+                                startActivity(i);
+
                             } catch (JSONException e1) {
                                 e1.printStackTrace();
                             }
@@ -79,8 +82,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.d("codeo", "error");
         }
 
-        Intent i=new Intent(this,LocationActivity.class);
-        startActivity(i);
 
     }
 }

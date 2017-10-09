@@ -5,15 +5,21 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.CellInfoGsm;
+import android.telephony.CellInfoLte;
+import android.telephony.CellSignalStrengthGsm;
+import android.telephony.CellSignalStrengthLte;
+import android.telephony.TelephonyManager;
+import android.telephony.gsm.GsmCellLocation;
+import android.util.Log;
 
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.squareup.picasso.Picasso;
-
-import java.util.Calendar;
 
 public class LocationActivity extends AppCompatActivity {
 
@@ -22,26 +28,17 @@ public class LocationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
 
-        String timeinput = String.valueOf(1000 * 60 *  10);
-
-//        AlarmManager alarmMgr = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+//        Calendar cal = Calendar.getInstance();
 //        Intent intent = new Intent(this, MyService.class);
-//        PendingIntent alarmIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-//        alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-//                Long.parseLong(timeinput),
-//                Long.parseLong(timeinput), alarmIntent);
+//        PendingIntent pintent = PendingIntent.getService(this, 0, intent, 0);
+//        AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+//        alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 30 * 1000, pintent);
 
-        Calendar cal = Calendar.getInstance();
-        Intent intent = new Intent(this, MyService.class);
-        PendingIntent pintent = PendingIntent.getService(this, 0, intent, 0);
-        AlarmManager alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-        alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 30*1000, pintent);
+        CircularImageView imageView = (CircularImageView) findViewById(R.id.image_view);
 
+//        showSettingsAlert("NETWORK");
 
-
-        CircularImageView imageView=(CircularImageView)findViewById(R.id.image_view);
-
-        showSettingsAlert("NETWORK");
+        startService();
 
         Picasso.with(this).load("http://chat.connectinn.tk/128x128/83119d/fff/Vatsal.png&text=VS").into(imageView);
     }
@@ -49,7 +46,7 @@ public class LocationActivity extends AppCompatActivity {
 
     public void showSettingsAlert(String provider) {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(
-               this);
+                this);
 
         alertDialog.setTitle(provider + " SETTINGS");
 
@@ -61,7 +58,7 @@ public class LocationActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(
                                 Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                      startActivity(intent);
+                        startActivity(intent);
                     }
                 });
 
@@ -74,4 +71,12 @@ public class LocationActivity extends AppCompatActivity {
 
         alertDialog.show();
     }
+
+
+    public void startService(){
+        Intent i = new Intent(this , MyService.class);
+        startService(i);
+    }
+
+
 }
