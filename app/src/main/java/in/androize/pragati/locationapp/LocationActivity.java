@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -26,18 +27,13 @@ import in.androize.pragati.locationapp.R;
 public class LocationActivity extends AppCompatActivity {
 
     private static final int LOCATION_PERMISSION_CODE = 855;
-    private static final int  PERMISSION_CODE = 8785;
+    private static final int PERMISSION_CODE = 8785;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
 
-        Calendar cal = Calendar.getInstance();
-        Intent intent = new Intent(this, MyIntentService.class);
-        PendingIntent pintent = PendingIntent.getService(this, 0, intent, 0);
-        AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 60*1000, pintent);
 
         CircularImageView imageView = (CircularImageView) findViewById(R.id.image_view);
 
@@ -56,19 +52,41 @@ public class LocationActivity extends AppCompatActivity {
 //
 //            } else {
 
-//            if (isStoragePermissionsAllowed(this)) {
-//                startService();
-//            } else {
-//                requestStoragePermissions(this, LOCATION_PERMISSION_CODE);
-//                startService(new Intent(this, MyService.class));
-//            }
-//        } else {
-//            startService();
-//        }
+            if (isLocationPermissionsAllowed(this)) {
+                startService();
+            } else {
+                requestStoragePermissions(this, LOCATION_PERMISSION_CODE);
+                startService();
+            }
+        } else {
+            startService();
+        }
 
 //        startService();
 
-            Picasso.with(this).load("http://chat.connectinn.tk/128x128/83119d/fff/Vatsal.png&text=VS").into(imageView);
+        Picasso.with(this).load("http://chat.connectinn.tk/128x128/83119d/fff/Vatsal.png&text=VS").into(imageView);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode){
+
+            case LOCATION_PERMISSION_CODE:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                  startService();
+
+                } else {
+
+                    requestStoragePermissions(this,LOCATION_PERMISSION_CODE);
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
         }
     }
 
@@ -100,45 +118,35 @@ public class LocationActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
+//
+//    public void startService(){
+//        Intent i = new Intent(this , MyService.class);
+//        startService(i);
+//    }
 
-    public void startService(){
-        Intent i = new Intent(this , MyService.class);
-        startService(i);
+
+    public void startService() {
+        Calendar cal = Calendar.getInstance();
+        Intent intent = new Intent(this, MyService.class);
+        PendingIntent pintent = PendingIntent.getService(this, 0, intent, 0);
+        AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(),60 * 1000, pintent);
     }
 
     public static void requestStoragePermissions(Activity activity, int PERMISSION_REQUEST_CODE) {
-        java.lang.String[] perms = {"android.permission.ACCESS_FINE_LOCATION", "android.permission.ACCESS_COARSE_LOCATION","android.permission.READ_PHONE_STATE"};
+        java.lang.String[] perms = {"android.permission.ACCESS_FINE_LOCATION", "android.permission.ACCESS_COARSE_LOCATION", "android.permission.READ_PHONE_STATE"};
         ActivityCompat.requestPermissions(activity, perms, PERMISSION_REQUEST_CODE);
     }
 
-    public static boolean isStoragePermissionsAllowed(Activity activity) {
+    public static boolean isLocationPermissionsAllowed(Activity activity) {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
             return activity.checkSelfPermission("android.permission.ACCESS_FINE_LOCATION") == PackageManager.PERMISSION_GRANTED
                     &&
                     activity.checkSelfPermission("android.permission.ACCESS_COARSE_LOCATION") == PackageManager.PERMISSION_GRANTED
-            &&
+                    &&
                     activity.checkSelfPermission("android.permission.READ_PHONE_STATE") == PackageManager.PERMISSION_GRANTED;
         }
         return true;
-    }
-
-
-
-    @Override
-    @TargetApi(Build.VERSION_CODES.M)
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PERMISSION_CODE) {
-            if (Settings.canDrawOverlays(this)) {
-                if (isStoragePermissionsAllowed(this)) {
-                    startService();
-                } else {
-                    requestStoragePermissions(this, LOCATION_PERMISSION_CODE);
-                    startService(new Intent(this, MyService.class));
-                }
-
-            }
-
-        }
     }
 
 }

@@ -31,73 +31,64 @@ import org.json.JSONObject;
 public class MyService extends Service {
 
 
-
     private static final String TAG = "codeo";
     private LocationManager mLocationManager = null;
     private static final int LOCATION_INTERVAL = 1000;
     private static final float LOCATION_DISTANCE = 0;
 
 
-
-
-
     private String lat;
     private String token;
     private String longitude;
 
-    private class LocationListener implements android.location.LocationListener
-    {
+    public class LocationListener implements android.location.LocationListener {
         Location mLastLocation;
 
-        public LocationListener(String provider)
-        {
+        public LocationListener(String provider) {
             Log.e(TAG, "LocationListener " + provider);
             mLastLocation = new Location(provider);
 
 
-            Log.d("codeo",mLastLocation.getLatitude()+" ,"+mLastLocation );
+            Log.d("codeo", mLastLocation.getLatitude() + " ," + mLastLocation);
         }
 
         @Override
-        public void onLocationChanged(Location location)
-        {
+        public void onLocationChanged(Location location) {
             Log.e(TAG, "onLocationChanged: " + location);
-            lat= String.valueOf(location.getLatitude());
-            longitude= String.valueOf(location.getLongitude());
+            lat = String.valueOf(location.getLatitude());
+            longitude = String.valueOf(location.getLongitude());
             sendData();
             mLastLocation.set(location);
 
+
+
         }
 
         @Override
-        public void onProviderDisabled(String provider)
-        {
+        public void onProviderDisabled(String provider) {
             Log.e(TAG, "onProviderDisabled: " + provider);
-            if(provider.equals(LocationManager.GPS_PROVIDER )){
-                initializeLocationManager();
+            if (provider.equals(LocationManager.GPS_PROVIDER)) {
+//                initializeLocationManager();
 
             }
         }
 
         @Override
-        public void onProviderEnabled(String provider)
-        {
+        public void onProviderEnabled(String provider) {
             Log.e(TAG, "onProviderEnabled: " + provider);
-            initializeLocationManager();
+//            initializeLocationManager();
         }
 
         @Override
-        public void onStatusChanged(String provider, int status, Bundle extras)
-        {
+        public void onStatusChanged(String provider, int status, Bundle extras) {
             Log.e(TAG, "onStatusChanged: " + provider);
         }
     }
 
-    LocationListener[] mLocationListeners = new LocationListener[] {
+    LocationListener[] mLocationListeners = new LocationListener[]{
             new LocationListener(LocationManager.GPS_PROVIDER),
             new LocationListener(LocationManager.NETWORK_PROVIDER)
     };
-
 
 
     @Override
@@ -110,9 +101,9 @@ public class MyService extends Service {
         SharedPreferences prefs = getSharedPreferences(
                 "myapp", Context.MODE_PRIVATE);
 
-        token = prefs.getString("token",null);
+        token = prefs.getString("token", null);
 
-        Log.d("codeo",token+ "kmdk");
+        Log.d("codeo", token + "kmdk");
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         }
@@ -157,7 +148,7 @@ public class MyService extends Service {
         destroyLocationListner();
     }
 
-    public void destroyLocationListner(){
+    public void destroyLocationListner() {
         if (mLocationManager != null) {
             for (int i = 0; i < mLocationListeners.length; i++) {
                 try {
@@ -179,178 +170,164 @@ public class MyService extends Service {
         //TODO Code that runs repeatedly
 
 
-
-
     }
-
 
 
     private void initializeLocationManager() {
 
-        Log.d("codeo","init loc man");
+        Log.d("codeo", "init loc man");
 
 
-            if(mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)|mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
-                //invoke location from phone
-                Log.d("codeo","init loc man");
+        if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) | mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            //invoke location from phone
+            Log.d("codeo", "init loc man");
 
-                try {
-                    mLocationManager.requestLocationUpdates(
-                            LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
-                            mLocationListeners[1]);
-
-
-                } catch (java.lang.SecurityException ex) {
-                    Log.i(TAG, "fail to request location update, ignore", ex);
-                } catch (IllegalArgumentException ex) {
-                    Log.d(TAG, "network provider does not exist, " + ex.getMessage());
-                }
-                try {
-                    mLocationManager.requestLocationUpdates(
-                            LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
-                            mLocationListeners[0]);
-                } catch (java.lang.SecurityException ex) {
-                    Log.i(TAG, "fail to request location update, ignore", ex);
-                } catch (IllegalArgumentException ex) {
-                    Log.d(TAG, "gps provider does not exist " + ex.getMessage());
-                }
-
-            }else {
+            try {
+                mLocationManager.requestLocationUpdates(
+                        LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
+                        mLocationListeners[1]);
 
 
-                Log.d("codeo","call handler");
+            } catch (java.lang.SecurityException ex) {
+                Log.i(TAG, "fail to request location update, ignore", ex);
+            } catch (IllegalArgumentException ex) {
+                Log.d(TAG, "network provider does not exist, " + ex.getMessage());
+            }
+            try {
+                mLocationManager.requestLocationUpdates(
+                        LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
+                        mLocationListeners[0]);
+            } catch (java.lang.SecurityException ex) {
+                Log.i(TAG, "fail to request location update, ignore", ex);
+            } catch (IllegalArgumentException ex) {
+                Log.d(TAG, "gps provider does not exist " + ex.getMessage());
+            }
+
+        } else {
 
 
-                final Handler handler = new Handler();
-                final int delay = 1000*10; //milliseconds
+            Log.d("codeo", "call handler");
 
-                handler.postDelayed(new Runnable(){
-                    public void run(){
-                        //do something
-                        handler.postDelayed(this, delay);
-                        if(mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)|mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                            initializeLocationManager();
-                        }else {
-                            Log.d("codeo","call google api");
-                            callGoogleApi();
-                        }
-
-                        Log.d("codeo","vjldfnvljdfnbl");
-                    }
-                }, delay);
-
-
+            callGoogleApi();
 
 
 
 //                TODO build object of google api and handle response
-            }
+        }
     }
 
-    private void sendData(){
+    private void sendData() {
 
-        JsonObject object=new JsonObject();
+        JsonObject object = new JsonObject();
 
-            object.addProperty("entity","Location");
-            object.addProperty("action","Create");
-            object.addProperty("lat",lat);
-            object.addProperty("lng",longitude);
+        object.addProperty("entity", "Location");
+        object.addProperty("action", "Create");
+        object.addProperty("lat", lat);
+        object.addProperty("lng", longitude);
 
-        Log.d("codeo",object.toString());
+        Log.d("codeo", object.toString());
 
 
-        try{
+        try {
 
             Ion.with(this)
                     .load("http://web.demoplatform.simplifii.com/api/v1/cards")
-                    .setHeader("Authorization","bearer "+token)
+                    .setHeader("Authorization", "bearer " + token)
                     .setJsonObjectBody(object)
                     .asString()
                     .setCallback(new FutureCallback<String>() {
                         @Override
                         public void onCompleted(Exception e, String result) {
-                            if (result!=null) {
+                            if (result != null) {
                                 try {
-                                    JSONObject obj1= null;
+                                    JSONObject obj1 = null;
                                     obj1 = new JSONObject(result);
-                                    String msg= String.valueOf(obj1.get("msg"));
+                                    String msg = String.valueOf(obj1.get("msg"));
                                     Toast.makeText(MyService.this, msg, Toast.LENGTH_SHORT).show();
                                 } catch (JSONException e1) {
                                     Toast.makeText(MyService.this, e1.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
 
                                 Log.d("codeo", result);
+
+                                stopSelf();
+
                             }
                         }
                     });
 
-            Toast.makeText(this,"result called",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "result called", Toast.LENGTH_SHORT).show();
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             Toast.makeText(this, "result exceptiom", Toast.LENGTH_SHORT).show();
             Log.d("codeo", "error");
         }
     }
 
-    private void sendData(String lati,String lng){
+    private void sendData(String lati, String lng) {
 
 
-        JsonObject object=new JsonObject();
+        JsonObject object = new JsonObject();
 
-        object.addProperty("entity","Location");
-        object.addProperty("action","Create");
-        object.addProperty("lat",lati);
-        object.addProperty("lng",lng);
+        object.addProperty("entity", "Location");
+        object.addProperty("action", "Create");
+        object.addProperty("lat", lati);
+        object.addProperty("lng", lng);
 
-        if(object.toString() != null){
-            Log.d("codeo",object.toString());
+        if (object.toString() != null) {
+            Log.d("codeo", object.toString());
 
         }
 
 
-
-        try{
+        try {
             // String urlstring="10.1.1.1:8090/login.xml";
             Ion.with(this)
                     .load("http://web.demoplatform.simplifii.com/api/v1/cards")
-                    .setHeader("Authorization","bearer "+token)
+                    .setHeader("Authorization", "bearer " + token)
                     .setJsonObjectBody(object)
                     .asString()
                     .setCallback(new FutureCallback<String>() {
                         @Override
                         public void onCompleted(Exception e, String result) {
-                            if(result != null){
+                            if (result != null) {
                                 try {
-                                    JSONObject obj1= null;
+                                    JSONObject obj1 = null;
                                     obj1 = new JSONObject(result);
-                                    String msg= String.valueOf(obj1.get("msg"));
+                                    String msg = String.valueOf(obj1.get("msg"));
                                     Toast.makeText(MyService.this, msg, Toast.LENGTH_SHORT).show();
+
+                                    stopSelf();
+
                                 } catch (JSONException e1) {
                                     Toast.makeText(MyService.this, e1.getMessage(), Toast.LENGTH_SHORT).show();
+                                    stopSelf();
+
                                 }
 
-                                Log.d("codeo",result+" vfkhgbk");
+                                Log.d("codeo", result + " vfkhgbk");
 
                             }
+                            stopSelf();
+
 
 //                            Log.d("codeo",e.getMessage()+ "  hjghubgk");
                         }
                     });
 
-            Toast.makeText(this,"result called",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "result called", Toast.LENGTH_SHORT).show();
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             Toast.makeText(this, "result exceptiom", Toast.LENGTH_SHORT).show();
             Log.d("codeo", "error");
         }
     }
 
 
-
     //call google api to get location
     public void callGoogleApi() {
-        Log.d("codeo","get data called");
-        int mcc = 0, mnc = 0, cid = 0 , lac = 0;
+        Log.d("codeo", "get data called");
+        int mcc = 0, mnc = 0, cid = 0, lac = 0;
 
         final TelephonyManager telephony = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
         if (telephony.getPhoneType() == TelephonyManager.PHONE_TYPE_GSM) {
@@ -358,7 +335,7 @@ public class MyService extends Service {
             if (location != null) {
                 cid = location.getCid();
                 lac = location.getLac();
-                    Log.d("codeo", location.getCid() + "   " + location.getLac());
+                Log.d("codeo", location.getCid() + "   " + location.getLac());
 
             }
             String networkOperator = telephony.getNetworkOperator();
@@ -376,22 +353,22 @@ public class MyService extends Service {
         JsonArray jsonArray = new JsonArray();
 
 
-        jsonArrayObject.addProperty("cellId",cid);
-        jsonArrayObject.addProperty("locationAreaCode",lac);
-        jsonArrayObject.addProperty("mobileCountryCode",mcc);
-        jsonArrayObject.addProperty("mobileNetworkCode",mnc);
+        jsonArrayObject.addProperty("cellId", cid);
+        jsonArrayObject.addProperty("locationAreaCode", lac);
+        jsonArrayObject.addProperty("mobileCountryCode", mcc);
+        jsonArrayObject.addProperty("mobileNetworkCode", mnc);
 
         jsonArray.add(jsonArrayObject);
 
         object.add("cellTowers", jsonArray);
 
-        if(jsonArrayObject.toString() != null){
-            Log.d("codeo",jsonArrayObject.toString());
+        if (jsonArrayObject.toString() != null) {
+            Log.d("codeo", jsonArrayObject.toString());
 
         }
 
 
-        try{
+        try {
             Ion.with(this)
                     .load("https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyBnF1iPIWboObGjMSXcLgZ9sPXsB5HPFHk")
                     .setJsonObjectBody(object)
@@ -399,32 +376,32 @@ public class MyService extends Service {
                     .setCallback(new FutureCallback<String>() {
                         @Override
                         public void onCompleted(Exception e, String result) {
-                           if(result != null){
-                               try {
-                                   JSONObject obj1= null;
-                                   obj1 = new JSONObject(result);
-                                   String msg= String.valueOf(obj1.get("msg"));
-                                   Toast.makeText(MyService.this, msg, Toast.LENGTH_SHORT).show();
-                               } catch (JSONException e1) {
-                                   Toast.makeText(MyService.this, e1.getMessage(), Toast.LENGTH_SHORT).show();
-                               }
-                               Log.d("codeo",result);
+                            if (result != null) {
+                                try {
+                                    JSONObject obj1 = null;
+                                    obj1 = new JSONObject(result);
+                                    String msg = String.valueOf(obj1.get("msg"));
+                                    Toast.makeText(MyService.this, msg, Toast.LENGTH_SHORT).show();
+                                } catch (JSONException e1) {
+                                    Toast.makeText(MyService.this, e1.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                                Log.d("codeo", result);
 
-                           }
-                            JSONObject obj= null;
+                            }
+                            JSONObject obj = null;
                             try {
                                 obj = new JSONObject(result);
                             } catch (JSONException e1) {
                                 e1.printStackTrace();
                             }
                             try {
-                                JSONObject location= obj.getJSONObject("location");
-                                String latit=location.getString("lat");
-                                String langi=location.getString("lng");
+                                JSONObject location = obj.getJSONObject("location");
+                                String latit = location.getString("lat");
+                                String langi = location.getString("lng");
 
-                                Log.d("codeo",latit+"  "+langi);
+                                Log.d("codeo", latit + "  " + langi);
 
-                                sendData(latit,langi);
+                                sendData(latit, langi);
 
                             } catch (JSONException e1) {
                                 e1.printStackTrace();
@@ -433,18 +410,15 @@ public class MyService extends Service {
                         }
                     });
 
-            Toast.makeText(this,"result called",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "result called", Toast.LENGTH_SHORT).show();
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             Toast.makeText(this, "result exceptiom", Toast.LENGTH_SHORT).show();
             Log.d("codeo", "error");
         }
 
 
     }
-
-
-
 
 
 }
