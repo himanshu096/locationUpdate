@@ -1,4 +1,4 @@
-package in.androize.himanshu.locationapp;
+package in.androize.pragati.locationapp;
 
 import android.app.IntentService;
 import android.app.Service;
@@ -192,7 +192,7 @@ public class MyService extends Service {
 
             if(mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)|mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
                 //invoke location from phone
-
+                Log.d("codeo","init loc man");
 
                 try {
                     mLocationManager.requestLocationUpdates(
@@ -269,7 +269,18 @@ public class MyService extends Service {
                     .setCallback(new FutureCallback<String>() {
                         @Override
                         public void onCompleted(Exception e, String result) {
-                            Log.d("codeo",result);
+                            if (result!=null) {
+                                try {
+                                    JSONObject obj1= null;
+                                    obj1 = new JSONObject(result);
+                                    String msg= String.valueOf(obj1.get("msg"));
+                                    Toast.makeText(MyService.this, msg, Toast.LENGTH_SHORT).show();
+                                } catch (JSONException e1) {
+                                    Toast.makeText(MyService.this, e1.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+
+                                Log.d("codeo", result);
+                            }
                         }
                     });
 
@@ -291,7 +302,11 @@ public class MyService extends Service {
         object.addProperty("lat",lati);
         object.addProperty("lng",lng);
 
-        Log.d("codeo",object.toString());
+        if(object.toString() != null){
+            Log.d("codeo",object.toString());
+
+        }
+
 
 
         try{
@@ -304,7 +319,21 @@ public class MyService extends Service {
                     .setCallback(new FutureCallback<String>() {
                         @Override
                         public void onCompleted(Exception e, String result) {
-                            Log.d("codeo",result);
+                            if(result != null){
+                                try {
+                                    JSONObject obj1= null;
+                                    obj1 = new JSONObject(result);
+                                    String msg= String.valueOf(obj1.get("msg"));
+                                    Toast.makeText(MyService.this, msg, Toast.LENGTH_SHORT).show();
+                                } catch (JSONException e1) {
+                                    Toast.makeText(MyService.this, e1.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+
+                                Log.d("codeo",result+" vfkhgbk");
+
+                            }
+
+//                            Log.d("codeo",e.getMessage()+ "  hjghubgk");
                         }
                     });
 
@@ -329,8 +358,7 @@ public class MyService extends Service {
             if (location != null) {
                 cid = location.getCid();
                 lac = location.getLac();
-
-                Log.d("codeo", location.getCid() + "   " + location.getLac());
+                    Log.d("codeo", location.getCid() + "   " + location.getLac());
 
             }
             String networkOperator = telephony.getNetworkOperator();
@@ -356,7 +384,11 @@ public class MyService extends Service {
         jsonArray.add(jsonArrayObject);
 
         object.add("cellTowers", jsonArray);
-        Log.d("codeo",jsonArrayObject.toString());
+
+        if(jsonArrayObject.toString() != null){
+            Log.d("codeo",jsonArrayObject.toString());
+
+        }
 
 
         try{
@@ -367,7 +399,18 @@ public class MyService extends Service {
                     .setCallback(new FutureCallback<String>() {
                         @Override
                         public void onCompleted(Exception e, String result) {
-                            Log.d("codeo",result);
+                           if(result != null){
+                               try {
+                                   JSONObject obj1= null;
+                                   obj1 = new JSONObject(result);
+                                   String msg= String.valueOf(obj1.get("msg"));
+                                   Toast.makeText(MyService.this, msg, Toast.LENGTH_SHORT).show();
+                               } catch (JSONException e1) {
+                                   Toast.makeText(MyService.this, e1.getMessage(), Toast.LENGTH_SHORT).show();
+                               }
+                               Log.d("codeo",result);
+
+                           }
                             JSONObject obj= null;
                             try {
                                 obj = new JSONObject(result);

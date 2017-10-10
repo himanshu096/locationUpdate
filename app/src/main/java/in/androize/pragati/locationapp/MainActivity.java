@@ -1,6 +1,5 @@
-package in.androize.himanshu.locationapp;
+package in.androize.pragati.locationapp;
 
-import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,12 +11,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
+import com.testfairy.TestFairy;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import in.androize.pragati.locationapp.R;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -29,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        TestFairy.begin(this, "245a1030730bbef128847f50e873d54987e26793");
 
         Button login = (Button)findViewById(R.id.login_button);
          name = (EditText) findViewById(R.id.login_id);
@@ -52,11 +54,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     .setCallback(new FutureCallback<String>() {
                         @Override
                         public void onCompleted(Exception e, String result) {
+
+                        if(result != null){
+                            try {
+                                JSONObject obj1= null;
+                                obj1 = new JSONObject(result);
+                                String msg= String.valueOf(obj1.get("msg"));
+                                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+                            } catch (JSONException e1) {
+                                Toast.makeText(MainActivity.this, e1.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+
+
                             Log.d("codeo",result);
+
+                        }
                             try {
                                 JSONObject obj=new JSONObject(result);
                                String token= String.valueOf(obj.get("token"));
-                                Log.d("codeo",token);
+                                if(token != null){
+                                    Log.d("codeo",token);
+
+                                }
 
 
 

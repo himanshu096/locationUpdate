@@ -30,4 +30,5 @@ dependencies {
     compile 'com.koushikdutta.ion:ion:2.+'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.mikhaellopez:circularimageview:3.0.2'
+    compile 'testfairy:testfairy-android-sdk:1.+@aar'
 }
