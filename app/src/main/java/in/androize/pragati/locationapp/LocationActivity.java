@@ -19,6 +19,8 @@ import android.os.Bundle;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.squareup.picasso.Picasso;
 
+import java.util.Calendar;
+
 import in.androize.pragati.locationapp.R;
 
 public class LocationActivity extends AppCompatActivity {
@@ -31,49 +33,44 @@ public class LocationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
 
-//        Calendar cal = Calendar.getInstance();
-//        Intent intent = new Intent(this, MyService.class);
-//        PendingIntent pintent = PendingIntent.getService(this, 0, intent, 0);
-//        AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-//        alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 30 * 1000, pintent);
+        Calendar cal = Calendar.getInstance();
+        Intent intent = new Intent(this, MyIntentService.class);
+        PendingIntent pintent = PendingIntent.getService(this, 0, intent, 0);
+        AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 60*1000, pintent);
 
         CircularImageView imageView = (CircularImageView) findViewById(R.id.image_view);
 
 //        showSettingsAlert("NETWORK");
 
 
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
-            if (!Settings.canDrawOverlays(this)) {
+//            if (!Settings.canDrawOverlays(this)) {
+//
+//                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+//                        Uri.parse("package:" + getPackageName()));
+//                startActivityForResult(intent, PERMISSION_CODE);
+//
+//
+//
+//            } else {
 
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                        Uri.parse("package:" + getPackageName()));
-                startActivityForResult(intent, PERMISSION_CODE);
-
-
-
-            } else {
-
-                if (isStoragePermissionsAllowed(this)) {
-                    startService();
-                } else {
-                    requestStoragePermissions(this, LOCATION_PERMISSION_CODE);
-                    startService(new Intent(this, MyService.class));
-
-                }
-            }
-
-
-        } else {
-            startService();
-        }
+//            if (isStoragePermissionsAllowed(this)) {
+//                startService();
+//            } else {
+//                requestStoragePermissions(this, LOCATION_PERMISSION_CODE);
+//                startService(new Intent(this, MyService.class));
+//            }
+//        } else {
+//            startService();
+//        }
 
 //        startService();
 
-        Picasso.with(this).load("http://chat.connectinn.tk/128x128/83119d/fff/Vatsal.png&text=VS").into(imageView);
+            Picasso.with(this).load("http://chat.connectinn.tk/128x128/83119d/fff/Vatsal.png&text=VS").into(imageView);
+        }
     }
-
 
     public void showSettingsAlert(String provider) {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(
